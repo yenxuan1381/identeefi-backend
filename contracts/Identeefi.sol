@@ -2,48 +2,36 @@
 pragma solidity ^0.8.17;
 
 contract Identeefi {
-    address public owner;
+    address public owner; 
 
     struct Product {
         string name;
-        uint serialNumber;
+        string serialNumber;
         string description;
-        string brand;
         string image;
-        string[] history;
+        productHistory[] history;
         bool status;
     }
 
-     mapping(string => Product) products;
+    mapping(string => Product) products;
 
     struct productHistory {
-        uint256 id;
-        Actors actor;
+        string id;
+        string actor;
         string location;
-        uint256 timestamp;
+        string timestamp;
     }
 
-    enum Actors {manufacturer, supplier, retailer, owner}
-    Actors public actors;
-
-    function get_actor() public view returns (Actors) {
-        return actors;
+    function registerProduct(string memory _name, string memory _serialNumber, string memory _description, string memory _image, bool _status) public {
+        products[_serialNumber] = Product(_name, _serialNumber, _description, _image, new productHistory[](0), _status);
     }
 
-    function set(Actors _actors) public {
-        actors = _actors;
+    function addProductHistory(string memory _serialNumber, string memory _id, string memory _actor, string memory _location, string memory _timestamp) public {
+        products[_serialNumber].history.push(productHistory(_id, _actor, _location, _timestamp));
     }
 
-    function registerProduct(string memory _name, string memory _manufacturer, string memory _serialNumber) public {
-        products[_serialNumber] = Product(_name, _manufacturer, _serialNumber, new string[](0));
-    }
-
-    function addProductHistory(string memory _serialNumber, string memory _history) public {
-        products[_serialNumber].history.push(_history);
-    }
-
-    function getProduct(string memory _serialNumber) public view returns (string memory, string memory, string memory, string[] memory) {
-        return (products[_serialNumber].name, products[_serialNumber].manufacturer, products[_serialNumber].serialNumber, products[_serialNumber].history);
+    function getProduct(string memory _serialNumber) public view returns (string memory, string memory, string memory, string memory, productHistory[], memory, bool) {
+        return (products[_serialNumber].name, products[_serialNumber].serialNumber,products[_serialNumber].description, products[_serialNumber].image, products[_serialNumber].history, products[_serialNumber].status);
     }
 
 }
